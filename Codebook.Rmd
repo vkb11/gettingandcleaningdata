@@ -1,0 +1,174 @@
+The features selected for this database come from the accelerometer and gyroscope 3-axial raw signals tAcc-XYZ and tGyro-XYZ
+These time domain signals (prefix 't' to denote time) were captured at a constant rate of 50 Hz. Then they were filtered using a median filter and a 3rd order low pass Butterworth filter with a corner frequency of 20 Hz to remove noise. Similarly, the acceleration signal was then separated into body and gravity acceleration signals (tBodyAcc-XYZ and tGravityAcc-XYZ) using another low pass Butterworth filter with a corner frequency of 0.3 Hz. 
+
+Subsequently, the body linear acceleration and angular velocity were derived in time to obtain Jerk signals (tBodyAccJerk-XYZ and tBodyGyroJerk-XYZ). Also the magnitude of these three-dimensional signals were calculated using the Euclidean norm (tBodyAccMag, tGravityAccMag, tBodyAccJerkMag, tBodyGyroMag, tBodyGyroJerkMag). 
+
+Finally a Fast Fourier Transform (FFT) was applied to some of these signals producing fBodyAcc-XYZ, fBodyAccJerk-XYZ, fBodyGyro-XYZ, fBodyAccJerkMag, fBodyGyroMag, fBodyGyroJerkMag. (Note the 'f' to indicate frequency domain signals). 
+
+These signals were used to estimate variables of the feature vector for each pattern:  
+'-XYZ' is used to denote 3-axial signals in the X, Y and Z directions.
+
+tBodyAcc-XYZ
+tGravityAcc-XYZ
+tBodyAccJerk-XYZ
+tBodyGyro-XYZ
+tBodyGyroJerk-XYZ
+tBodyAccMag
+tGravityAccMag
+tBodyAccJerkMag
+tBodyGyroMag
+tBodyGyroJerkMag
+fBodyAcc-XYZ
+fBodyAccJerk-XYZ
+fBodyGyro-XYZ
+fBodyAccMag
+fBodyAccJerkMag
+fBodyGyroMag
+fBodyGyroJerkMag
+
+The set of variables that were estimated from these signals are
+mean(): Mean value
+std(): Standard deviation
+mad(): Median absolute deviation 
+max(): Largest value in array
+min(): Smallest value in array
+sma(): Signal magnitude area
+energy(): Energy measure. Sum of the squares divided by the number of values. 
+iqr(): Interquartile range 
+entropy(): Signal entropy
+arCoeff(): Autorregresion coefficients with Burg order equal to 4
+correlation(): correlation coefficient between two signals
+maxInds(): index of the frequency component with largest magnitude
+meanFreq(): Weighted average of the frequency components to obtain a mean frequency
+skewness(): skewness of the frequency domain signal 
+kurtosis(): kurtosis of the frequency domain signal 
+bandsEnergy(): Energy of a frequency interval within the 64 bins of the FFT of each window.
+angle(): Angle between to vectors.
+
+Additional vectors obtained by averaging the signals in a signal window sample. These are used on the angle() variable:
+
+gravityMean
+tBodyAccMean
+tBodyAccJerkMean
+tBodyGyroMean
+tBodyGyroJerkMean
+
+The complete list of variables of each feature vector is available in 'features.txt'
+
+1.Merges the training and the test sets to create one data set Reading the contents in provided UCI HAR Data Files and Folder
+library(dplyr)
+## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+getwd()
+## [1] "C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning"
+list.files()
+## [1] "Data Cleaning.Rproj"   "README.html"           "README.md"            
+## [4] "README.Rmd"            "run_analysis.R"        "tidy_data.txt"        
+## [7] "tidy_data_average.txt" "tidy_data_new.txt"     "UCI HAR Dataset"
+
+Reading contents of the UCI HAR Folder Codebook to create.txt is the copy of "feature_info.txt" (which will be used to create the final codebook)
+list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset")
+## [1] "activity_labels.txt"  "CodebookToCreate.txt" "features.txt"        
+## [4] "features_info.txt"    "README.txt"           "test"                
+## [7] "train"
+
+Reading contents of the "train" folder and sub-folder Sub-folder Inertial Signals contain readings from accelerometer and gyroscope sensor for movements in all the 3 Dimensions.
+list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/train")
+## [1] "Inertial Signals"  "subject_train.txt" "X_train.txt"      
+## [4] "y_train.txt"
+list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/train/Inertial Signals")
+## [1] "body_acc_x_train.txt"  "body_acc_y_train.txt"  "body_acc_z_train.txt" 
+## [4] "body_gyro_x_train.txt" "body_gyro_y_train.txt" "body_gyro_z_train.txt"
+## [7] "total_acc_x_train.txt" "total_acc_y_train.txt" "total_acc_z_train.txt"
+
+Reading contents of the "test" sub-folder Sub-folder Inertial Signals contain readings from accelerometer and gyroscope sensor for movements in 3D
+list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/test")
+## [1] "Inertial Signals" "subject_test.txt" "X_test.txt"      
+## [4] "y_test.txt"
+list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/test/Inertial Signals")
+## [1] "body_acc_x_test.txt"  "body_acc_y_test.txt"  "body_acc_z_test.txt" 
+## [4] "body_gyro_x_test.txt" "body_gyro_y_test.txt" "body_gyro_z_test.txt"
+## [7] "total_acc_x_test.txt" "total_acc_y_test.txt" "total_acc_z_test.txt"
+
+Reading text data to data frame
+X_train<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/train/X_train.txt", header = FALSE)
+Y_train<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/train/y_train.txt", header = FALSE)
+X_test<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/test/X_test.txt", header = FALSE)
+Y_test<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/test/y_test.txt", header = FALSE)
+S_train<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/train/subject_train.txt", header = FALSE)
+S_test<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/test/subject_test.txt", header = FALSE)
+
+Combining the training and test data by rows
+X<- rbind(X_train, X_test)
+Y<- rbind(Y_train, Y_test)
+S<- rbind(S_train, S_test)
+
+2.Extracts only the measurements on the mean and standard deviation for each measurement. Reading the features table and giving then friendly name
+features<-read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/features.txt")
+head(features)
+##   V1                V2
+## 1  1 tBodyAcc-mean()-X
+## 2  2 tBodyAcc-mean()-Y
+## 3  3 tBodyAcc-mean()-Z
+## 4  4  tBodyAcc-std()-X
+## 5  5  tBodyAcc-std()-Y
+## 6  6  tBodyAcc-std()-Z
+names(features)<- c('ID', "Name")
+
+Extracting mean and standard deviation from each measurement
+extract_features<- grep("mean|std", features$Name)
+X<- X[, extract_features]
+dim(X)
+## [1] 10299    79
+
+3.Uses descriptive activity names to name the activities in the data set 4.Appropriately labels the data set with descriptive variable names. Reading Activity labels and assigning friendly names
+activity<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/activity_labels.txt")
+head(activity)
+##   V1                 V2
+## 1  1            WALKING
+## 2  2   WALKING_UPSTAIRS
+## 3  3 WALKING_DOWNSTAIRS
+## 4  4            SITTING
+## 5  5           STANDING
+## 6  6             LAYING
+names(activity)<- c('activity_id', 'activity_name')
+Y[, 1]<- activity[Y[, 1],2]
+names(Y)<- "activity"
+dim(S)
+## [1] 10299     1
+names(S)<- "subject"
+
+Combining the three tables and writing it in the work directory in text format
+tidy_data<- cbind(S, Y, X)
+names(tidy_data)
+##  [1] "subject"  "activity" "V1"       "V2"       "V3"       "V4"      
+##  [7] "V5"       "V6"       "V41"      "V42"      "V43"      "V44"     
+## [13] "V45"      "V46"      "V81"      "V82"      "V83"      "V84"     
+## [19] "V85"      "V86"      "V121"     "V122"     "V123"     "V124"    
+## [25] "V125"     "V126"     "V161"     "V162"     "V163"     "V164"    
+## [31] "V165"     "V166"     "V201"     "V202"     "V214"     "V215"    
+## [37] "V227"     "V228"     "V240"     "V241"     "V253"     "V254"    
+## [43] "V266"     "V267"     "V268"     "V269"     "V270"     "V271"    
+## [49] "V294"     "V295"     "V296"     "V345"     "V346"     "V347"    
+## [55] "V348"     "V349"     "V350"     "V373"     "V374"     "V375"    
+## [61] "V424"     "V425"     "V426"     "V427"     "V428"     "V429"    
+## [67] "V452"     "V453"     "V454"     "V503"     "V504"     "V513"    
+## [73] "V516"     "V517"     "V526"     "V529"     "V530"     "V539"    
+## [79] "V542"     "V543"     "V552"
+write.table(tidy_data, file = "tidy_data.txt", row.names = FALSE)
+
+5.Creates a second, independent tidy data set with the average of each variable for each activity and each subject
+tidy_data_new<- tidy_data[, 3:dim(tidy_data)[2]]
+write.table(tidy_data_new, file = "tidy_data_new.txt", row.names = FALSE)
+tidy_data_average<- aggregate(tidy_data_new, list(tidy_data$subject, tidy_data$activity), mean)
+names(tidy_data_average)[1] <- "subject"
+names(tidy_data_average)[2] <- "activity"
+write.table(tidy_data_average, file 
