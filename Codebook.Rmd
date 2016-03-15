@@ -56,6 +56,7 @@ tBodyGyroJerkMean
 The complete list of variables of each feature vector is available in 'features.txt'
 
 1.Merges the training and the test sets to create one data set Reading the contents in provided UCI HAR Data Files and Folder
+
 library(dplyr)
 ## 
 ## Attaching package: 'dplyr'
@@ -70,17 +71,20 @@ library(dplyr)
 getwd()
 ## [1] "C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning"
 list.files()
-## [1] "Data Cleaning.Rproj"   "README.html"           "README.md"            
-## [4] "README.Rmd"            "run_analysis.R"        "tidy_data.txt"        
-## [7] "tidy_data_average.txt" "tidy_data_new.txt"     "UCI HAR Dataset"
+##  [1] "Codebook.Rmd"          "Codebook.txt"         
+##  [3] "CodebookToCreate.txt"  "Data Cleaning.Rproj"  
+##  [5] "README.html"           "README.md"            
+##  [7] "README.Rmd"            "run_analysis.R"       
+##  [9] "tidy_data.txt"         "tidy_data_average.txt"
+## [11] "tidy_data_new.txt"     "UCI HAR Dataset"
+Reading contents of the UCI HAR Folder Codebook to create.txt is the copy of “feature_info.txt” (which will be used to create the final codebook)
 
-Reading contents of the UCI HAR Folder Codebook to create.txt is the copy of "feature_info.txt" (which will be used to create the final codebook)
 list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset")
 ## [1] "activity_labels.txt"  "CodebookToCreate.txt" "features.txt"        
 ## [4] "features_info.txt"    "README.txt"           "test"                
 ## [7] "train"
+Reading contents of the “train” folder and sub-folder Sub-folder Inertial Signals contain readings from accelerometer and gyroscope sensor for movements in all the 3 Dimensions.
 
-Reading contents of the "train" folder and sub-folder Sub-folder Inertial Signals contain readings from accelerometer and gyroscope sensor for movements in all the 3 Dimensions.
 list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/train")
 ## [1] "Inertial Signals"  "subject_train.txt" "X_train.txt"      
 ## [4] "y_train.txt"
@@ -88,8 +92,8 @@ list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI 
 ## [1] "body_acc_x_train.txt"  "body_acc_y_train.txt"  "body_acc_z_train.txt" 
 ## [4] "body_gyro_x_train.txt" "body_gyro_y_train.txt" "body_gyro_z_train.txt"
 ## [7] "total_acc_x_train.txt" "total_acc_y_train.txt" "total_acc_z_train.txt"
+Reading contents of the “test” sub-folder Sub-folder Inertial Signals contain readings from accelerometer and gyroscope sensor for movements in 3D
 
-Reading contents of the "test" sub-folder Sub-folder Inertial Signals contain readings from accelerometer and gyroscope sensor for movements in 3D
 list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/test")
 ## [1] "Inertial Signals" "subject_test.txt" "X_test.txt"      
 ## [4] "y_test.txt"
@@ -97,21 +101,21 @@ list.files("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI 
 ## [1] "body_acc_x_test.txt"  "body_acc_y_test.txt"  "body_acc_z_test.txt" 
 ## [4] "body_gyro_x_test.txt" "body_gyro_y_test.txt" "body_gyro_z_test.txt"
 ## [7] "total_acc_x_test.txt" "total_acc_y_test.txt" "total_acc_z_test.txt"
-
 Reading text data to data frame
+
 X_train<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/train/X_train.txt", header = FALSE)
 Y_train<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/train/y_train.txt", header = FALSE)
 X_test<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/test/X_test.txt", header = FALSE)
 Y_test<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/test/y_test.txt", header = FALSE)
 S_train<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/train/subject_train.txt", header = FALSE)
 S_test<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/test/subject_test.txt", header = FALSE)
-
 Combining the training and test data by rows
+
 X<- rbind(X_train, X_test)
 Y<- rbind(Y_train, Y_test)
 S<- rbind(S_train, S_test)
-
 2.Extracts only the measurements on the mean and standard deviation for each measurement. Reading the features table and giving then friendly name
+
 features<-read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/features.txt")
 head(features)
 ##   V1                V2
@@ -122,14 +126,17 @@ head(features)
 ## 5  5  tBodyAcc-std()-Y
 ## 6  6  tBodyAcc-std()-Z
 names(features)<- c('ID', "Name")
-
 Extracting mean and standard deviation from each measurement
+
 extract_features<- grep("mean|std", features$Name)
 X<- X[, extract_features]
+3.Uses descriptive activity names to name the activities in the data set
+
+names(X)<- gsub("\\(\\)", "", (features[extract_features, 2]))
 dim(X)
 ## [1] 10299    79
+4.Appropriately labels the data set with descriptive variable names. Reading Activity labels and assigning friendly names
 
-3.Uses descriptive activity names to name the activities in the data set 4.Appropriately labels the data set with descriptive variable names. Reading Activity labels and assigning friendly names
 activity<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/activity_labels.txt")
 head(activity)
 ##   V1                 V2
@@ -145,30 +152,57 @@ names(Y)<- "activity"
 dim(S)
 ## [1] 10299     1
 names(S)<- "subject"
-
 Combining the three tables and writing it in the work directory in text format
+
 tidy_data<- cbind(S, Y, X)
 names(tidy_data)
-##  [1] "subject"  "activity" "V1"       "V2"       "V3"       "V4"      
-##  [7] "V5"       "V6"       "V41"      "V42"      "V43"      "V44"     
-## [13] "V45"      "V46"      "V81"      "V82"      "V83"      "V84"     
-## [19] "V85"      "V86"      "V121"     "V122"     "V123"     "V124"    
-## [25] "V125"     "V126"     "V161"     "V162"     "V163"     "V164"    
-## [31] "V165"     "V166"     "V201"     "V202"     "V214"     "V215"    
-## [37] "V227"     "V228"     "V240"     "V241"     "V253"     "V254"    
-## [43] "V266"     "V267"     "V268"     "V269"     "V270"     "V271"    
-## [49] "V294"     "V295"     "V296"     "V345"     "V346"     "V347"    
-## [55] "V348"     "V349"     "V350"     "V373"     "V374"     "V375"    
-## [61] "V424"     "V425"     "V426"     "V427"     "V428"     "V429"    
-## [67] "V452"     "V453"     "V454"     "V503"     "V504"     "V513"    
-## [73] "V516"     "V517"     "V526"     "V529"     "V530"     "V539"    
-## [79] "V542"     "V543"     "V552"
+##  [1] "subject"                       "activity"                     
+##  [3] "tBodyAcc-mean-X"               "tBodyAcc-mean-Y"              
+##  [5] "tBodyAcc-mean-Z"               "tBodyAcc-std-X"               
+##  [7] "tBodyAcc-std-Y"                "tBodyAcc-std-Z"               
+##  [9] "tGravityAcc-mean-X"            "tGravityAcc-mean-Y"           
+## [11] "tGravityAcc-mean-Z"            "tGravityAcc-std-X"            
+## [13] "tGravityAcc-std-Y"             "tGravityAcc-std-Z"            
+## [15] "tBodyAccJerk-mean-X"           "tBodyAccJerk-mean-Y"          
+## [17] "tBodyAccJerk-mean-Z"           "tBodyAccJerk-std-X"           
+## [19] "tBodyAccJerk-std-Y"            "tBodyAccJerk-std-Z"           
+## [21] "tBodyGyro-mean-X"              "tBodyGyro-mean-Y"             
+## [23] "tBodyGyro-mean-Z"              "tBodyGyro-std-X"              
+## [25] "tBodyGyro-std-Y"               "tBodyGyro-std-Z"              
+## [27] "tBodyGyroJerk-mean-X"          "tBodyGyroJerk-mean-Y"         
+## [29] "tBodyGyroJerk-mean-Z"          "tBodyGyroJerk-std-X"          
+## [31] "tBodyGyroJerk-std-Y"           "tBodyGyroJerk-std-Z"          
+## [33] "tBodyAccMag-mean"              "tBodyAccMag-std"              
+## [35] "tGravityAccMag-mean"           "tGravityAccMag-std"           
+## [37] "tBodyAccJerkMag-mean"          "tBodyAccJerkMag-std"          
+## [39] "tBodyGyroMag-mean"             "tBodyGyroMag-std"             
+## [41] "tBodyGyroJerkMag-mean"         "tBodyGyroJerkMag-std"         
+## [43] "fBodyAcc-mean-X"               "fBodyAcc-mean-Y"              
+## [45] "fBodyAcc-mean-Z"               "fBodyAcc-std-X"               
+## [47] "fBodyAcc-std-Y"                "fBodyAcc-std-Z"               
+## [49] "fBodyAcc-meanFreq-X"           "fBodyAcc-meanFreq-Y"          
+## [51] "fBodyAcc-meanFreq-Z"           "fBodyAccJerk-mean-X"          
+## [53] "fBodyAccJerk-mean-Y"           "fBodyAccJerk-mean-Z"          
+## [55] "fBodyAccJerk-std-X"            "fBodyAccJerk-std-Y"           
+## [57] "fBodyAccJerk-std-Z"            "fBodyAccJerk-meanFreq-X"      
+## [59] "fBodyAccJerk-meanFreq-Y"       "fBodyAccJerk-meanFreq-Z"      
+## [61] "fBodyGyro-mean-X"              "fBodyGyro-mean-Y"             
+## [63] "fBodyGyro-mean-Z"              "fBodyGyro-std-X"              
+## [65] "fBodyGyro-std-Y"               "fBodyGyro-std-Z"              
+## [67] "fBodyGyro-meanFreq-X"          "fBodyGyro-meanFreq-Y"         
+## [69] "fBodyGyro-meanFreq-Z"          "fBodyAccMag-mean"             
+## [71] "fBodyAccMag-std"               "fBodyAccMag-meanFreq"         
+## [73] "fBodyBodyAccJerkMag-mean"      "fBodyBodyAccJerkMag-std"      
+## [75] "fBodyBodyAccJerkMag-meanFreq"  "fBodyBodyGyroMag-mean"        
+## [77] "fBodyBodyGyroMag-std"          "fBodyBodyGyroMag-meanFreq"    
+## [79] "fBodyBodyGyroJerkMag-mean"     "fBodyBodyGyroJerkMag-std"     
+## [81] "fBodyBodyGyroJerkMag-meanFreq"
 write.table(tidy_data, file = "tidy_data.txt", row.names = FALSE)
-
 5.Creates a second, independent tidy data set with the average of each variable for each activity and each subject
+
 tidy_data_new<- tidy_data[, 3:dim(tidy_data)[2]]
 write.table(tidy_data_new, file = "tidy_data_new.txt", row.names = FALSE)
 tidy_data_average<- aggregate(tidy_data_new, list(tidy_data$subject, tidy_data$activity), mean)
 names(tidy_data_average)[1] <- "subject"
 names(tidy_data_average)[2] <- "activity"
-write.table(tidy_data_average, file 
+write.table(tidy_data_average, file = "tidy_data_average.txt", row.names = FALSE)
