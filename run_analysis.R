@@ -20,6 +20,7 @@ head(features)
 names(features)<- c('ID', "Name")
 extract_features<- grep("mean|std", features$Name)
 X<- X[, extract_features]
+names(X)<- gsub("\\(\\)", "", (features[extract_features, 2]))
 dim(X)
 activity<- read.table("C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/activity_labels.txt")
 head(activity)
