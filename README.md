@@ -57,10 +57,14 @@ Extracting mean and standard deviation from each measurement
 ```{r}
 extract_features<- grep("mean|std", features$Name)
 X<- X[, extract_features]
-dim(X)
 ```
 
 3.Uses descriptive activity names to name the activities in the data set
+```{r}
+names(X)<- gsub("\\(\\)", "", (features[extract_features, 2]))
+dim(X)
+```
+
 4.Appropriately labels the data set with descriptive variable names.
 Reading Activity labels and assigning friendly names
 ```{r}
