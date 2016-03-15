@@ -83,9 +83,12 @@ img {
 <pre class="r"><code>getwd()</code></pre>
 <pre><code>## [1] &quot;C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning&quot;</code></pre>
 <pre class="r"><code>list.files()</code></pre>
-<pre><code>## [1] &quot;Data Cleaning.Rproj&quot;   &quot;README.html&quot;           &quot;README.md&quot;            
-## [4] &quot;README.Rmd&quot;            &quot;run_analysis.R&quot;        &quot;tidy_data.txt&quot;        
-## [7] &quot;tidy_data_average.txt&quot; &quot;tidy_data_new.txt&quot;     &quot;UCI HAR Dataset&quot;</code></pre>
+<pre><code>##  [1] &quot;Codebook.Rmd&quot;          &quot;Codebook.txt&quot;         
+##  [3] &quot;CodebookToCreate.txt&quot;  &quot;Data Cleaning.Rproj&quot;  
+##  [5] &quot;README.html&quot;           &quot;README.md&quot;            
+##  [7] &quot;README.Rmd&quot;            &quot;run_analysis.R&quot;       
+##  [9] &quot;tidy_data.txt&quot;         &quot;tidy_data_average.txt&quot;
+## [11] &quot;tidy_data_new.txt&quot;     &quot;UCI HAR Dataset&quot;</code></pre>
 <p>Reading contents of the UCI HAR Folder Codebook to create.txt is the copy of “feature_info.txt” (which will be used to create the final codebook)</p>
 <pre class="r"><code>list.files(&quot;C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset&quot;)</code></pre>
 <pre><code>## [1] &quot;activity_labels.txt&quot;  &quot;CodebookToCreate.txt&quot; &quot;features.txt&quot;        
@@ -131,10 +134,12 @@ head(features)</code></pre>
 <pre class="r"><code>names(features)&lt;- c('ID', &quot;Name&quot;)</code></pre>
 <p>Extracting mean and standard deviation from each measurement</p>
 <pre class="r"><code>extract_features&lt;- grep(&quot;mean|std&quot;, features$Name)
-X&lt;- X[, extract_features]
+X&lt;- X[, extract_features]</code></pre>
+<p>3.Uses descriptive activity names to name the activities in the data set</p>
+<pre class="r"><code>names(X)&lt;- gsub(&quot;\\(\\)&quot;, &quot;&quot;, (features[extract_features, 2]))
 dim(X)</code></pre>
 <pre><code>## [1] 10299    79</code></pre>
-<p>3.Uses descriptive activity names to name the activities in the data set 4.Appropriately labels the data set with descriptive variable names. Reading Activity labels and assigning friendly names</p>
+<p>4.Appropriately labels the data set with descriptive variable names. Reading Activity labels and assigning friendly names</p>
 <pre class="r"><code>activity&lt;- read.table(&quot;C:/Users/vkumar16/Desktop/R Data_Assg/Project_DCM/Data Cleaning/UCI HAR Dataset/activity_labels.txt&quot;)
 head(activity)</code></pre>
 <pre><code>##   V1                 V2
@@ -153,20 +158,47 @@ dim(S)</code></pre>
 <p>Combining the three tables and writing it in the work directory in text format</p>
 <pre class="r"><code>tidy_data&lt;- cbind(S, Y, X)
 names(tidy_data)</code></pre>
-<pre><code>##  [1] &quot;subject&quot;  &quot;activity&quot; &quot;V1&quot;       &quot;V2&quot;       &quot;V3&quot;       &quot;V4&quot;      
-##  [7] &quot;V5&quot;       &quot;V6&quot;       &quot;V41&quot;      &quot;V42&quot;      &quot;V43&quot;      &quot;V44&quot;     
-## [13] &quot;V45&quot;      &quot;V46&quot;      &quot;V81&quot;      &quot;V82&quot;      &quot;V83&quot;      &quot;V84&quot;     
-## [19] &quot;V85&quot;      &quot;V86&quot;      &quot;V121&quot;     &quot;V122&quot;     &quot;V123&quot;     &quot;V124&quot;    
-## [25] &quot;V125&quot;     &quot;V126&quot;     &quot;V161&quot;     &quot;V162&quot;     &quot;V163&quot;     &quot;V164&quot;    
-## [31] &quot;V165&quot;     &quot;V166&quot;     &quot;V201&quot;     &quot;V202&quot;     &quot;V214&quot;     &quot;V215&quot;    
-## [37] &quot;V227&quot;     &quot;V228&quot;     &quot;V240&quot;     &quot;V241&quot;     &quot;V253&quot;     &quot;V254&quot;    
-## [43] &quot;V266&quot;     &quot;V267&quot;     &quot;V268&quot;     &quot;V269&quot;     &quot;V270&quot;     &quot;V271&quot;    
-## [49] &quot;V294&quot;     &quot;V295&quot;     &quot;V296&quot;     &quot;V345&quot;     &quot;V346&quot;     &quot;V347&quot;    
-## [55] &quot;V348&quot;     &quot;V349&quot;     &quot;V350&quot;     &quot;V373&quot;     &quot;V374&quot;     &quot;V375&quot;    
-## [61] &quot;V424&quot;     &quot;V425&quot;     &quot;V426&quot;     &quot;V427&quot;     &quot;V428&quot;     &quot;V429&quot;    
-## [67] &quot;V452&quot;     &quot;V453&quot;     &quot;V454&quot;     &quot;V503&quot;     &quot;V504&quot;     &quot;V513&quot;    
-## [73] &quot;V516&quot;     &quot;V517&quot;     &quot;V526&quot;     &quot;V529&quot;     &quot;V530&quot;     &quot;V539&quot;    
-## [79] &quot;V542&quot;     &quot;V543&quot;     &quot;V552&quot;</code></pre>
+<pre><code>##  [1] &quot;subject&quot;                       &quot;activity&quot;                     
+##  [3] &quot;tBodyAcc-mean-X&quot;               &quot;tBodyAcc-mean-Y&quot;              
+##  [5] &quot;tBodyAcc-mean-Z&quot;               &quot;tBodyAcc-std-X&quot;               
+##  [7] &quot;tBodyAcc-std-Y&quot;                &quot;tBodyAcc-std-Z&quot;               
+##  [9] &quot;tGravityAcc-mean-X&quot;            &quot;tGravityAcc-mean-Y&quot;           
+## [11] &quot;tGravityAcc-mean-Z&quot;            &quot;tGravityAcc-std-X&quot;            
+## [13] &quot;tGravityAcc-std-Y&quot;             &quot;tGravityAcc-std-Z&quot;            
+## [15] &quot;tBodyAccJerk-mean-X&quot;           &quot;tBodyAccJerk-mean-Y&quot;          
+## [17] &quot;tBodyAccJerk-mean-Z&quot;           &quot;tBodyAccJerk-std-X&quot;           
+## [19] &quot;tBodyAccJerk-std-Y&quot;            &quot;tBodyAccJerk-std-Z&quot;           
+## [21] &quot;tBodyGyro-mean-X&quot;              &quot;tBodyGyro-mean-Y&quot;             
+## [23] &quot;tBodyGyro-mean-Z&quot;              &quot;tBodyGyro-std-X&quot;              
+## [25] &quot;tBodyGyro-std-Y&quot;               &quot;tBodyGyro-std-Z&quot;              
+## [27] &quot;tBodyGyroJerk-mean-X&quot;          &quot;tBodyGyroJerk-mean-Y&quot;         
+## [29] &quot;tBodyGyroJerk-mean-Z&quot;          &quot;tBodyGyroJerk-std-X&quot;          
+## [31] &quot;tBodyGyroJerk-std-Y&quot;           &quot;tBodyGyroJerk-std-Z&quot;          
+## [33] &quot;tBodyAccMag-mean&quot;              &quot;tBodyAccMag-std&quot;              
+## [35] &quot;tGravityAccMag-mean&quot;           &quot;tGravityAccMag-std&quot;           
+## [37] &quot;tBodyAccJerkMag-mean&quot;          &quot;tBodyAccJerkMag-std&quot;          
+## [39] &quot;tBodyGyroMag-mean&quot;             &quot;tBodyGyroMag-std&quot;             
+## [41] &quot;tBodyGyroJerkMag-mean&quot;         &quot;tBodyGyroJerkMag-std&quot;         
+## [43] &quot;fBodyAcc-mean-X&quot;               &quot;fBodyAcc-mean-Y&quot;              
+## [45] &quot;fBodyAcc-mean-Z&quot;               &quot;fBodyAcc-std-X&quot;               
+## [47] &quot;fBodyAcc-std-Y&quot;                &quot;fBodyAcc-std-Z&quot;               
+## [49] &quot;fBodyAcc-meanFreq-X&quot;           &quot;fBodyAcc-meanFreq-Y&quot;          
+## [51] &quot;fBodyAcc-meanFreq-Z&quot;           &quot;fBodyAccJerk-mean-X&quot;          
+## [53] &quot;fBodyAccJerk-mean-Y&quot;           &quot;fBodyAccJerk-mean-Z&quot;          
+## [55] &quot;fBodyAccJerk-std-X&quot;            &quot;fBodyAccJerk-std-Y&quot;           
+## [57] &quot;fBodyAccJerk-std-Z&quot;            &quot;fBodyAccJerk-meanFreq-X&quot;      
+## [59] &quot;fBodyAccJerk-meanFreq-Y&quot;       &quot;fBodyAccJerk-meanFreq-Z&quot;      
+## [61] &quot;fBodyGyro-mean-X&quot;              &quot;fBodyGyro-mean-Y&quot;             
+## [63] &quot;fBodyGyro-mean-Z&quot;              &quot;fBodyGyro-std-X&quot;              
+## [65] &quot;fBodyGyro-std-Y&quot;               &quot;fBodyGyro-std-Z&quot;              
+## [67] &quot;fBodyGyro-meanFreq-X&quot;          &quot;fBodyGyro-meanFreq-Y&quot;         
+## [69] &quot;fBodyGyro-meanFreq-Z&quot;          &quot;fBodyAccMag-mean&quot;             
+## [71] &quot;fBodyAccMag-std&quot;               &quot;fBodyAccMag-meanFreq&quot;         
+## [73] &quot;fBodyBodyAccJerkMag-mean&quot;      &quot;fBodyBodyAccJerkMag-std&quot;      
+## [75] &quot;fBodyBodyAccJerkMag-meanFreq&quot;  &quot;fBodyBodyGyroMag-mean&quot;        
+## [77] &quot;fBodyBodyGyroMag-std&quot;          &quot;fBodyBodyGyroMag-meanFreq&quot;    
+## [79] &quot;fBodyBodyGyroJerkMag-mean&quot;     &quot;fBodyBodyGyroJerkMag-std&quot;     
+## [81] &quot;fBodyBodyGyroJerkMag-meanFreq&quot;</code></pre>
 <pre class="r"><code>write.table(tidy_data, file = &quot;tidy_data.txt&quot;, row.names = FALSE)</code></pre>
 <p>5.Creates a second, independent tidy data set with the average of each variable for each activity and each subject</p>
 <pre class="r"><code>tidy_data_new&lt;- tidy_data[, 3:dim(tidy_data)[2]]
